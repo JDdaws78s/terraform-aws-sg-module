@@ -1,4 +1,4 @@
-resource "aws_security_group" "sg" {
+resource "aws_security_group" "main" {
     name        = local.sg_name_final
     description = var.sg_description
     vpc_id      = var.vpc_id
@@ -16,18 +16,23 @@ resource "aws_security_group" "sg" {
         
     }
 
-    egress {
-        from_port        = 0 # from 0 to 0 means opening all ports
-        to_port          = 0
-        protocol         = "-1" # -1 means all protocols
-        cidr_blocks      = ["0.0.0.0/0"]
+    dynamic "egress" {
+        for_each = var.outbound_rules
+        content {
+            from_port        = egress.value["from_port"]    #each.value[<key-name>]
+            to_port          = egress.value["to_port"]
+            protocol         = egress.value["protocol"]
+            cidr_blocks      = egress.value["cidr_blocks"]
+
+        }
+        
     }
 
     tags = merge(
         var.common_tags,
         var.sg_tags,
         {
-            Name = "${var.project_name}-${var.environment}"
+            Name = local.sg_name_final
         }
     )
 }

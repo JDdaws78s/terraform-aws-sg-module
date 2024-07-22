@@ -13,8 +13,6 @@ variable "sg_name" {
 
 variable "sg_description" {
     type = string
-    default = ""
-  
 }
 
 variable "vpc_id" {
@@ -36,7 +34,7 @@ variable "inbound_rules" {
     default = []  
 }
 
-variable "egress_rules" {
+variable "outbound_rules" {
     type = list
     default = [
         {
